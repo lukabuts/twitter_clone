@@ -1,0 +1,15 @@
+import { Navigate } from "react-router-dom";
+import { routes } from "@/routes";
+import { useAuthStore } from "@/stores";
+import type { ReactNode } from "react";
+
+const GuestLayout = ({ children }: { children: ReactNode }) => {
+  const { user, isLoading } = useAuthStore();
+
+  if (isLoading) return <div className="max-w-md mx-auto p-6">Loading...</div>;
+  if (user) return <Navigate to={routes.home} replace />;
+
+  return <div className="max-w-md mx-auto p-6 space-y-6">{children}</div>;
+};
+
+export default GuestLayout;
