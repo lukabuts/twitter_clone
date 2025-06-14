@@ -1,27 +1,44 @@
+import { routes } from "@/routes";
 import { useAuthStore } from "@/stores";
 import { Link } from "react-router-dom";
 
 const Navigation = () => {
-  const { user, logout, isLoading } = useAuthStore();
+  const { user, logout, isUserLoading } = useAuthStore();
 
-  if (isLoading) return <div className="animate-pulse">Loading...</div>;
   return (
-    <nav className="flex items-center gap-4">
-      {user ? (
+    <nav className="flex items-center gap-6">
+      {isUserLoading ? (
+        <div className="flex gap-6">
+          <div className="h-6 w-16 rounded-md bg-gray-200 dark:bg-gray-700 animate-pulse"></div>
+          <div className="h-6 w-16 rounded-md bg-gray-200 dark:bg-gray-700 animate-pulse"></div>
+        </div>
+      ) : user ? (
         <>
-          <Link to="/profile" className="hover:underline">
+          <Link
+            to={routes.profile}
+            className="text-sm font-medium transition-colors hover:text-primary hover:underline"
+          >
             Profile
           </Link>
-          <button onClick={logout} className="hover:underline">
+          <button
+            onClick={logout}
+            className="text-sm font-medium transition-colors hover:text-primary hover:underline"
+          >
             Log Out
           </button>
         </>
       ) : (
         <>
-          <Link to="/register" className="hover:underline">
+          <Link
+            to={routes.register}
+            className="text-sm font-medium transition-colors hover:text-primary hover:underline"
+          >
             Register
           </Link>
-          <Link to="/login" className="hover:underline">
+          <Link
+            to={routes.login}
+            className="text-sm font-medium transition-colors hover:text-primary hover:underline"
+          >
             Log In
           </Link>
         </>

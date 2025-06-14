@@ -1,7 +1,6 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
-import { Button } from "@/components/ui/button";
 import {
   Form,
   FormControl,
@@ -13,12 +12,12 @@ import {
 import { Input } from "@/components/ui/input";
 import { Link } from "react-router-dom";
 import { routes } from "@/routes";
-import { GuestLayout } from "@/components";
 import { RegistrationFormSchema } from "@/schemas";
 import { useAuthStore } from "@/stores";
+import { SubmitButton } from "@/components";
 
 const Register = () => {
-  const { register } = useAuthStore();
+  const { register, isRegisterLoading, registerError } = useAuthStore();
   const form = useForm<z.infer<typeof RegistrationFormSchema>>({
     resolver: zodResolver(RegistrationFormSchema),
     defaultValues: {
@@ -30,10 +29,11 @@ const Register = () => {
   });
 
   async function onSubmit(data: z.infer<typeof RegistrationFormSchema>) {
+    if (isRegisterLoading) return;
     register(data);
   }
   return (
-    <GuestLayout>
+    <>
       <div className="space-y-2 text-center">
         <h1 className="text-3xl font-bold">Create an account</h1>
         <p className="text-gray-500 dark:text-gray-400">
@@ -97,10 +97,12 @@ const Register = () => {
               </FormItem>
             )}
           />
-
-          <Button type="submit" className="w-full">
-            Register
-          </Button>
+          {registerError && (
+            <p className="text-sm font-medium text-destructive">
+              {registerError}
+            </p>
+          )}
+          <SubmitButton isDisabled={isRegisterLoading}>Register</SubmitButton>
         </form>
       </Form>
       <div className="text-center text-sm text-gray-500 dark:text-gray-400">
@@ -109,7 +111,7 @@ const Register = () => {
           Sign in
         </Link>
       </div>
-    </GuestLayout>
+    </>
   );
 };
 
