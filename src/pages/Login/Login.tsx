@@ -1,4 +1,3 @@
-import { GuestLayout } from "@/components";
 import { Input } from "@/components/ui/input";
 import { LoginFormSchema } from "@/schemas";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -6,7 +5,8 @@ import { useForm } from "react-hook-form";
 import { Link } from "react-router-dom";
 import * as z from "zod";
 import { routes } from "@/routes";
-import { Button } from "@/components/ui/button";
+import { useAuthStore } from "@/stores";
+import { SubmitButton } from "@/components";
 import {
   Form,
   FormControl,
@@ -15,10 +15,9 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-import { useAuthStore } from "@/stores";
 
 const Login = () => {
-  const { login } = useAuthStore();
+  const { login, loginError, isLoginLoading } = useAuthStore();
   const form = useForm<z.infer<typeof LoginFormSchema>>({
     resolver: zodResolver(LoginFormSchema),
     defaultValues: {
@@ -28,10 +27,12 @@ const Login = () => {
   });
 
   async function onSubmit(data: z.infer<typeof LoginFormSchema>) {
-    login(data);
+    if (isLoginLoading) return;
+    await login(data);
   }
+
   return (
-    <GuestLayout>
+    <>
       <div className="space-y-2 text-center">
         <h1 className="text-3xl font-bold">Log In</h1>
       </div>
@@ -46,7 +47,13 @@ const Login = () => {
                 <FormControl>
                   <Input placeholder="john@example.com" {...field} />
                 </FormControl>
+                {/* Show both validation error and login error */}
                 <FormMessage />
+                {loginError && !form.formState.errors.email && (
+                  <p className="text-sm font-medium text-destructive">
+                    {loginError}
+                  </p>
+                )}
               </FormItem>
             )}
           />
@@ -63,18 +70,16 @@ const Login = () => {
               </FormItem>
             )}
           />
-          <Button type="submit" className="w-full">
-            Log In
-          </Button>
+          <SubmitButton isDisabled={isLoginLoading}>Log In</SubmitButton>
         </form>
       </Form>
       <div className="text-center text-sm text-gray-500 dark:text-gray-400">
         Don't have an account?{" "}
         <Link className="underline" to={routes.register}>
-          Register in
+          Register
         </Link>
       </div>
-    </GuestLayout>
+    </>
   );
 };
 

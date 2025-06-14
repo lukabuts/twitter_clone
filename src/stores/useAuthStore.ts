@@ -18,34 +18,45 @@ interface User {
 interface AuthStore {
   user: User | null;
   token: string | null;
-  isLoading: boolean;
+  isUserLoading: boolean;
+  isLoginLoading: boolean;
+  isRegisterLoading: boolean;
+  loginError: string | null;
+  registerError: string | null;
   error: string | null;
   login: (data: z.infer<typeof LoginFormSchema>) => Promise<void>;
   register: (data: z.infer<typeof RegistrationFormSchema>) => Promise<void>;
   logout: () => void;
   setUser: (user: User) => void;
-  clearError: () => void;
   initializeAuth: () => Promise<void>;
 }
 
 export const useAuthStore = create<AuthStore>((set) => ({
   user: null,
   token: null,
-  isLoading: false,
+  isUserLoading: true,
+  isLoginLoading: false,
+  isRegisterLoading: false,
+  loginError: null,
+  registerError: null,
   error: null,
 
   initializeAuth: async () => {
-    const token = Cookies.get("auth_token");
-    if (!token) return;
+    set({ isUserLoading: true });
 
-    set({ isLoading: true });
+    const token = Cookies.get("auth_token");
+    if (!token) {
+      set({ user: null, token: null, isUserLoading: false });
+      return;
+    }
+
     try {
       const response = await api.get("/user");
 
       set({
         user: response.data,
         token,
-        isLoading: false,
+        isUserLoading: false,
       });
     } catch (error) {
       console.error("Failed to fetch user:", error);
@@ -53,12 +64,12 @@ export const useAuthStore = create<AuthStore>((set) => ({
       set({
         user: null,
         token: null,
-        isLoading: false,
+        isUserLoading: false,
       });
     }
   },
   login: async (data) => {
-    set({ isLoading: true, error: null });
+    set({ isLoginLoading: true, loginError: null });
     try {
       const response = await api.post("/login", {
         email: data.email,
@@ -72,7 +83,7 @@ export const useAuthStore = create<AuthStore>((set) => ({
           secure: true,
           sameSite: "Strict",
         });
-        set({ user, token, isLoading: false });
+        set({ user, token, loginError: null, isLoginLoading: false });
         navigate(routes.home);
       }
     } catch (error: unknown) {
@@ -87,14 +98,14 @@ export const useAuthStore = create<AuthStore>((set) => ({
       }
 
       set({
-        error: errorMessage,
-        isLoading: false,
+        loginError: errorMessage,
+        isLoginLoading: false,
       });
     }
   },
 
   register: async (data) => {
-    set({ isLoading: true, error: null });
+    set({ isRegisterLoading: true, error: null });
     try {
       const response = await api.post("/register", {
         name: data.name,
@@ -103,14 +114,14 @@ export const useAuthStore = create<AuthStore>((set) => ({
         password_confirmation: data.password_confirmation,
       });
 
-      if (response.status === 200) {
+      if (response.status === 201) {
         const { token, user } = response.data;
         Cookies.set("auth_token", token, {
           expires: 7,
           secure: true,
           sameSite: "Strict",
         });
-        set({ user, token, isLoading: false });
+        set({ user, token, isRegisterLoading: false });
         navigate(routes.home);
       }
     } catch (error: unknown) {
@@ -129,8 +140,8 @@ export const useAuthStore = create<AuthStore>((set) => ({
       }
 
       set({
-        error: errorMessage,
-        isLoading: false,
+        registerError: errorMessage,
+        isRegisterLoading: false,
       });
     }
   },
@@ -149,5 +160,4 @@ export const useAuthStore = create<AuthStore>((set) => ({
   },
 
   setUser: (user: User) => set({ user }),
-  clearError: () => set({ error: null }),
 }));
