@@ -6,15 +6,6 @@ import { LoginFormSchema, RegistrationFormSchema } from "@/schemas";
 import { routes } from "@/routes";
 import { AxiosError } from "axios";
 
-interface User {
-  id: number;
-  name: string;
-  email: string;
-  email_verified_at: string | null;
-  created_at: string;
-  updated_at: string;
-}
-
 interface AuthStore {
   user: User | null;
   token: string | null;
@@ -72,7 +63,7 @@ export const useAuthStore = create<AuthStore>((set) => ({
     set({ isLoginLoading: true, loginError: null });
     try {
       const response = await api.post("/login", {
-        email: data.email,
+        login: data.login,
         password: data.password,
       });
 
@@ -110,11 +101,13 @@ export const useAuthStore = create<AuthStore>((set) => ({
       const response = await api.post("/register", {
         name: data.name,
         email: data.email,
+        username: data.username,
         password: data.password,
         password_confirmation: data.password_confirmation,
       });
+      console.log(response);
 
-      if (response.status === 201) {
+      if (response.status === 200) {
         const { token, user } = response.data;
         Cookies.set("auth_token", token, {
           expires: 7,
@@ -122,7 +115,7 @@ export const useAuthStore = create<AuthStore>((set) => ({
           sameSite: "Strict",
         });
         set({ user, token, isRegisterLoading: false });
-        navigate(routes.home);
+        // navigate(routes.home);
       }
     } catch (error: unknown) {
       console.error("Registration error:", error);

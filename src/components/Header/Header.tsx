@@ -4,7 +4,7 @@ import { ModeToggle, Navigation } from "./components";
 
 const Header = () => {
   return (
-    <header className="w-full flex items-center justify-between p-4 border-b bg-background">
+    <header className="w-full flex items-center justify-between p-4 border-b sticky top-0 z-50 backdrop-blur-2xl">
       <div className="text-lg font-semibold">
         <Link to={routes.home}>MyApp</Link>
       </div>

@@ -21,7 +21,7 @@ const Login = () => {
   const form = useForm<z.infer<typeof LoginFormSchema>>({
     resolver: zodResolver(LoginFormSchema),
     defaultValues: {
-      email: "",
+      login: "",
       password: "",
     },
   });
@@ -40,16 +40,16 @@ const Login = () => {
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
           <FormField
             control={form.control}
-            name="email"
+            name="login"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Email</FormLabel>
+                <FormLabel>Email or Username</FormLabel>
                 <FormControl>
                   <Input placeholder="john@example.com" {...field} />
                 </FormControl>
                 {/* Show both validation error and login error */}
                 <FormMessage />
-                {loginError && !form.formState.errors.email && (
+                {loginError && !form.formState.errors.login && (
                   <p className="text-sm font-medium text-destructive">
                     {loginError}
                   </p>

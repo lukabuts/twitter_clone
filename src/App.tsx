@@ -1,5 +1,5 @@
 import { routes } from "@/routes";
-import { Login, Profile, Register, Home } from "@/pages";
+import { Login, Profile, Register, Home, Tweet } from "@/pages";
 import { ThemeProvider } from "@/components/theme-provider";
 import { useEffect } from "react";
 import { useAuthStore } from "@/stores";
@@ -57,6 +57,9 @@ function App() {
               <Route path={routes.home} element={<Home />} />
             </Route>
           )}
+
+          {/* Other Routes */}
+          <Route path="/tweets/:slug" element={<Tweet />} />
         </Routes>
       </Router>
     </ThemeProvider>

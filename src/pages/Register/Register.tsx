@@ -23,6 +23,7 @@ const Register = () => {
     defaultValues: {
       name: "",
       email: "",
+      username: "",
       password: "",
       password_confirmation: "",
     },
@@ -64,6 +65,20 @@ const Register = () => {
                 <FormLabel>Email</FormLabel>
                 <FormControl>
                   <Input placeholder="john@example.com" {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
+          <FormField
+            control={form.control}
+            name="username"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Username</FormLabel>
+                <FormControl>
+                  <Input placeholder="johndoe" {...field} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
