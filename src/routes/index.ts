@@ -3,5 +3,5 @@ export const routes = {
   login: "/login",
   register: "/register",
   profile: "/profile",
-  //   temp: (name: string) => `/${name}`,
+  tweet: (slug: string) => `tweets/${slug}`,
 };
