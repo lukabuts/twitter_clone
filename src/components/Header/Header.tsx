@@ -4,15 +4,17 @@ import { ModeToggle, Navigation } from "./components";
 
 const Header = () => {
   return (
-    <header className="w-full flex items-center justify-between p-4 border-b sticky top-0 z-50 backdrop-blur-2xl">
-      <div className="text-lg font-semibold">
-        <Link to={routes.home}>MyApp</Link>
-      </div>
+    <header className="w-full p-4 border-b sticky top-0 z-50 backdrop-blur-2xl">
+      <div className="flex items-center justify-between max-w-2xl mx-auto px-4">
+        <div className="text-lg font-semibold">
+          <Link to={routes.home}>BetterX</Link>
+        </div>
 
-      <div className="flex items-center gap-4">
-        <Navigation />
+        <div className="flex items-center gap-4">
+          <Navigation />
 
-        <ModeToggle />
+          <ModeToggle />
+        </div>
       </div>
     </header>
   );

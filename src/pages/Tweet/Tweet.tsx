@@ -62,13 +62,19 @@ const TweetDetail = () => {
             <div className="mt-3 space-y-3">
               <p className="text-lg whitespace-pre-line">{tweet.content}</p>
 
-              {tweet.image && (
+              {tweet.images && (
                 <div className="rounded-xl border border-gray-200 dark:border-gray-800 overflow-hidden mt-3">
-                  <img
-                    src={tweet.image}
-                    alt="Tweet media"
-                    className="w-full h-auto object-cover"
-                  />
+                  {
+                    tweet.images.map((image, index) => (
+                      <img
+                        key={index}
+                        src={image}
+                        alt={`Tweet image ${index + 1}`}
+                        className="w-full h-auto max-h-96 object-cover"
+                        loading="lazy"
+                      />
+                    ))
+                  }
                 </div>
               )}
             </div>

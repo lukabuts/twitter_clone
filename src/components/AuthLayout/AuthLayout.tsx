@@ -8,7 +8,7 @@ const AuthLayout = ({ children }: { children: ReactNode }) => {
 
   if (!user) return <Navigate to={routes.login} replace />;
 
-  return <div className="mx-auto p-6 space-y-6">{children}</div>;
+  return <div className="mx-auto px-6 space-y-6">{children}</div>;
 };
 
 export default AuthLayout;

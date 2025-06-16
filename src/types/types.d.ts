@@ -1,9 +1,8 @@
 interface Tweet {
   id: number;
   user_id: number;
-  title: string;
-  content: string;
-  image: string | null;
+  content: string | null;
+  images: string[] | null;
   slug: string;
   status: "draft" | "published";
   created_at: string;

@@ -1,6 +1,6 @@
 import { useNavigate } from "react-router-dom";
 import { useEffect } from "react";
-import { setRouterNavigate } from "@/lib/router";
+import { setRouterNavigate } from "@/lib";
 
 export const RouterInit = () => {
   const navigate = useNavigate();

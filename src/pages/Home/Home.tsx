@@ -1,6 +1,7 @@
 import { useTweetStore } from "@/stores";
 import { useCallback, useEffect, useRef } from "react";
 import { TweetCard } from "./components";
+import { CreateTweet } from "@/components";
 
 const Home = () => {
   const { fetchTweets, tweetsData, isLoading } = useTweetStore();
@@ -37,7 +38,8 @@ const Home = () => {
   }
 
   return (
-    <div className="max-w-2xl mx-auto py-4 px-4">
+    <div className="max-w-2xl mx-auto border-x">
+      <CreateTweet />
       {tweetsData.data.map((tweet, index) => (
         <div
           key={tweet.id}
