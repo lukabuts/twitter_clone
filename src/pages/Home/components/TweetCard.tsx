@@ -4,7 +4,7 @@ import { Heart, MessageCircle, Repeat2, Share, Verified } from "lucide-react";
 
 const PostCard = ({ tweet }: { tweet: Tweet }) => {
   return (
-    <div className="border-b border-gray-200 dark:border-gray-700 py-4">
+    <div className="border-b py-4 px-6">
       <div className="flex space-x-3">
         {/* User Avatar */}
         <div className="flex-shrink-0">
@@ -42,24 +42,33 @@ const PostCard = ({ tweet }: { tweet: Tweet }) => {
 
           {/* Tweet Body */}
           <Link to={`/tweets/${tweet.slug}`} className="block mt-1 space-y-2">
-            {tweet.title && (
-              <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
-                {tweet.title}
-              </h3>
+            {tweet.content && (
+              <p className="text-gray-700 dark:text-gray-300 whitespace-pre-line">
+                {tweet.content}
+              </p>
             )}
-            <p className="text-gray-700 dark:text-gray-300 whitespace-pre-line">
-              {tweet.content}
-            </p>
 
             {/* Tweet Image */}
-            {tweet.image && (
-              <div className="mt-2 rounded-xl overflow-hidden border border-gray-200 dark:border-gray-700">
-                <img
-                  src={tweet.image}
-                  alt="Tweet content"
-                  className="w-full h-auto max-h-96 object-cover"
-                  loading="lazy"
-                />
+            {tweet.images && (
+              <div
+                className={`grid gap-2 mt-3 ${
+                  tweet.images.length === 1 ? "grid-cols-1" : "grid-cols-2"
+                }`}
+              >
+                {tweet.images.map((imageUrl: string, index: number) => (
+                  <div key={index} className="relative group">
+                    <img
+                      src={imageUrl}
+                      alt={`Tweet content ${index + 1}`}
+                      className="rounded-xl w-full h-48 object-cover"
+                      loading="lazy"
+                      onError={(e) => {
+                        (e.target as HTMLImageElement).src =
+                          "/placeholder-image.jpg";
+                      }}
+                    />
+                  </div>
+                ))}
               </div>
             )}
           </Link>

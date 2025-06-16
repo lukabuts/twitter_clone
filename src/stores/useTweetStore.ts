@@ -5,13 +5,22 @@ interface TweetStore {
   tweetsData: TweetData;
   tweet: Tweet | null;
   isLoading: boolean;
+  isCreating: boolean;
   error: string | null;
   fetchTweets: (page: number) => Promise<void>;
   getTweet: (slug: string) => Promise<void>;
-  // addTweet: (tweet) => Promise<any>;
+  createTweet: (
+    formData: FormData,
+    config?: {
+      onUploadProgress?: (
+        progressEvent: import("axios").AxiosProgressEvent
+      ) => void;
+    }
+  ) => Promise<void>;
+  resetError: () => void;
 }
 
-export const useTweetStore = create<TweetStore>((set) => ({
+export const useTweetStore = create<TweetStore>((set, get) => ({
   tweetsData: {
     current_page: 1,
     data: [],
@@ -25,52 +34,121 @@ export const useTweetStore = create<TweetStore>((set) => ({
     to: 0,
   },
   tweet: null,
-  isLoading: true,
+  isLoading: false,
+  isCreating: false,
   error: null,
 
   fetchTweets: async (page) => {
     set({ isLoading: true, error: null });
     try {
-      const response = await api.get(`/tweets?page=${page}`);
-      set((state) => ({
+      const response = await api.get<TweetData>(`/tweets?page=${page}`);
+      set({
         tweetsData: {
           ...response.data,
           data:
             page === 1
               ? response.data.data
-              : [...state.tweetsData.data, ...response.data.data],
+              : [...get().tweetsData.data, ...response.data.data],
         },
         isLoading: false,
-      }));
-    } catch (error) {
-      console.error("Failed to fetch tweets:", error);
-      set({ error: "Failed to fetch tweets", isLoading: false });
+      });
+    } catch (error: unknown) {
+      let errorMessage = "Failed to fetch tweets";
+      if (
+        error &&
+        typeof error === "object" &&
+        "response" in error &&
+        error.response &&
+        typeof error.response === "object" &&
+        "data" in error.response &&
+        error.response.data &&
+        typeof error.response.data === "object" &&
+        "message" in error.response.data
+      ) {
+        errorMessage =
+          (error.response as { data: { message?: string } }).data.message ||
+          errorMessage;
+      } else if (error && typeof error === "object" && "message" in error) {
+        errorMessage = (error as { message?: string }).message || errorMessage;
+      }
+      set({
+        error: errorMessage,
+        isLoading: false,
+      });
     }
   },
 
   getTweet: async (slug) => {
     set({ isLoading: true, error: null });
     try {
-      const response = await api.get(`/tweets/${slug}`);
-      set({ isLoading: false });
-      if (response.data) {
-        set({ tweet: response.data });
+      const response = await api.get<Tweet>(`/tweets/${slug}`);
+      set({ tweet: response.data, isLoading: false });
+    } catch (error: unknown) {
+      let errorMessage = "Tweet not found";
+      if (
+        error &&
+        typeof error === "object" &&
+        "response" in error &&
+        error.response &&
+        typeof error.response === "object" &&
+        "data" in error.response &&
+        error.response.data &&
+        typeof error.response.data === "object" &&
+        "message" in error.response.data
+      ) {
+        errorMessage =
+          (error.response as { data: { message?: string } }).data.message ||
+          errorMessage;
+      } else if (error && typeof error === "object" && "message" in error) {
+        errorMessage = (error as { message?: string }).message || errorMessage;
       }
-    } catch (error) {
-      console.error("Failed to fetch tweet:", error);
-      set({ error: "Failed to fetch tweet", isLoading: false });
+      set({
+        error: errorMessage,
+        isLoading: false,
+      });
     }
   },
 
-  // addTweet: async (tweet) => {
-  //   try {
-  //     const response = await api.post("/tweets", tweet);
-  //     return response;
-  //   } catch (error) {
-  //     console.error("Failed to add tweet:", error);
-  //     set({ error: "Failed to add tweet" });
-  //   }
-  // },
+  createTweet: async (formData, config) => {
+    set({ isCreating: true, error: null });
+    try {
+      const response = await api.post<Tweet>("/tweets", formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+        onUploadProgress: config?.onUploadProgress,
+      });
 
-  // clearError: () => set({ error: null }),
+      set((state) => ({
+        tweetsData: {
+          ...state.tweetsData,
+          data: [response.data, ...state.tweetsData.data],
+        },
+        isCreating: false,
+      }));
+    } catch (error: unknown) {
+      let errorMessage = "Failed to create tweet";
+      if (
+        error &&
+        typeof error === "object" &&
+        "response" in error &&
+        error.response &&
+        typeof error.response === "object" &&
+        "data" in error.response &&
+        error.response.data &&
+        typeof error.response.data === "object" &&
+        "message" in error.response.data
+      ) {
+        errorMessage =
+          (error.response as { data: { message?: string } }).data.message ||
+          errorMessage;
+      } else if (error && typeof error === "object" && "message" in error) {
+        errorMessage = (error as { message?: string }).message || errorMessage;
+      }
+      set({ error: errorMessage, isCreating: false });
+      throw error;
+    }
+  },
+
+  resetError: () => set({ error: null }),
 }));

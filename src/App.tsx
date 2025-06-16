@@ -15,6 +15,7 @@ import {
   Header,
   Loading,
   RouterInit,
+  ScrollToTop,
 } from "@/components";
 
 function App() {
@@ -29,6 +30,7 @@ function App() {
       <Router>
         <Header />
         <RouterInit />
+        <ScrollToTop />
         <Routes>
           {/* Public routes render immediately */}
           <Route
